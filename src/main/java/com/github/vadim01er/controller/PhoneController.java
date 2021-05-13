@@ -10,16 +10,22 @@ import com.github.vadim01er.service.PhoneService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/phones")
 @AllArgsConstructor
 public class PhoneController {
 
     private final PhoneService phoneService;
+
+    private static final String regexp = "^\\+?([0-9])?\\(?[0-9]{3}\\)?[0-9]{3}\\-?[0-9]{2}\\-?[0-9]{2}$";
 
     @GetMapping()
     public ResponseEntity<JsonResponse> getAll() {
@@ -37,11 +43,7 @@ public class PhoneController {
     }
 
     @GetMapping(params = {"number"})
-    public ResponseEntity<JsonResponse> getByNumber(@RequestParam("number") String number) {
-        if (number.length() != 11) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ExceptionResponse(HttpStatus.BAD_REQUEST, "Phone number must be 11 length"));
-        }
+    public ResponseEntity<JsonResponse> getByNumber(@Valid @Pattern(regexp= regexp) @RequestParam("number") String number) {
         List<Phone> byId = phoneService.findByNumber(number);
         return !byId.isEmpty()
                 ? ResponseEntity.ok().body(new ListJsonResponse(byId))
@@ -50,10 +52,7 @@ public class PhoneController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JsonResponse> replacePhone(@PathVariable("id") Long id, @RequestBody PhoneDTO phoneDTO) {
-        if (phoneDTO.getNumber() == null || phoneDTO.getName() == null) {
-            return ResponseEntity.badRequest().body(new ExceptionResponse(HttpStatus.BAD_REQUEST));
-        }
+    public ResponseEntity<JsonResponse> replacePhone(@PathVariable("id") Long id, @Valid @RequestBody PhoneDTO phoneDTO) {
         Phone phone = phoneService.replacePhone(id, phoneDTO);
         return phone != null
                 ? ResponseEntity.ok().body(new ObjectJsonResponse(phone))

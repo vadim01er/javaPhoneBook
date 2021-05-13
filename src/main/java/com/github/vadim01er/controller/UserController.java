@@ -11,14 +11,18 @@ import com.github.vadim01er.json.ObjectJsonResponse;
 import com.github.vadim01er.service.PhoneService;
 import com.github.vadim01er.service.UserService;
 import lombok.AllArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Validated
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
@@ -27,7 +31,6 @@ public class UserController {
     private final UserService userService;
     private final PhoneService phoneService;
 
-
     @GetMapping()
     public ResponseEntity<JsonResponse> getAll() {
         return ResponseEntity.ok()
@@ -35,10 +38,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<JsonResponse> addUser(@RequestBody UserDTO userRequest) {
-        if (userRequest.getName() == null) {
-            return ResponseEntity.badRequest().body(new ExceptionResponse(HttpStatus.BAD_REQUEST, "Username must not be null"));
-        }
+    public ResponseEntity<JsonResponse> addUser(@Valid @RequestBody UserDTO userRequest) {
         User user = userService.addUser(userRequest.getName());
         return user != null
                 ? ResponseEntity.ok().body(new ObjectJsonResponse(user))
@@ -55,10 +55,10 @@ public class UserController {
     }
 
     @GetMapping(params = {"name"})
-    public ResponseEntity<JsonResponse> getByName(@RequestParam("name") String name) {
+    public ResponseEntity<JsonResponse> getByName(@Length(min = 1) @RequestParam("name") String name) {
         if (name.equals("")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ExceptionResponse(HttpStatus.BAD_REQUEST, "Param name must not be 0 lenght"));
+                    .body(new ExceptionResponse(HttpStatus.BAD_REQUEST, "Param name must not be 0 length"));
         }
         List<User> all = userService.findAll();
         Pattern pattern = Pattern.compile(".*" + name + ".*");
@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JsonResponse> replaceUser(@PathVariable("id") Long id, @RequestBody UserDTO userRequest) {
+    public ResponseEntity<JsonResponse> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody UserDTO userRequest) {
         User user = userService.replaceUser(id, userRequest);
         return user != null
                 ? ResponseEntity.ok().body(new ObjectJsonResponse(user))
@@ -93,11 +93,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/phones")
-    public ResponseEntity<JsonResponse> saveContact(@PathVariable("id") Long id, @RequestBody PhoneDTO phoneDTO) {
-        if (phoneDTO.getName() == null || phoneDTO.getNumber() == null) {
-            return ResponseEntity.badRequest().body(
-                    new ExceptionResponse(HttpStatus.BAD_REQUEST, "Name and number must not be null"));
-        }
+    public ResponseEntity<JsonResponse> saveContact(@PathVariable("id") Long id, @Valid @RequestBody PhoneDTO phoneDTO) {
         User user = userService.findById(id);
         if (user == null) {
             return ResponseEntity.badRequest().body(

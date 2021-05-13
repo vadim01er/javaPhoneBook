@@ -66,7 +66,7 @@ class PhoneControllerTest {
 
     @Test
     void getByNumberNotFound() throws Exception {
-        mockMvc.perform(get("/phones").param("number", "-1111111111"))
+        mockMvc.perform(get("/phones").param("number", "+11111111111"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())));
@@ -74,7 +74,7 @@ class PhoneControllerTest {
 
     @Test
     void getByNumberBadRequest() throws Exception {
-        mockMvc.perform(get("/phones").param("number", "8"))
+        mockMvc.perform(get("/phones").param("number", "888888888"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())));
@@ -109,7 +109,7 @@ class PhoneControllerTest {
 
     @Test
     void replacePhoneNotFound() throws Exception {
-        PhoneDTO phoneDTO = new PhoneDTO("new test name phone", "111111");
+        PhoneDTO phoneDTO = new PhoneDTO("new test name phone", "11111111111");
         String request = objectMapper.writeValueAsString(phoneDTO);
         mockMvc.perform(
                 put("/phones/-1")
@@ -123,8 +123,8 @@ class PhoneControllerTest {
     @Test
     void replacePhoneSuccess() throws Exception {
         User testUser = userService.addUser("test name");
-        Phone testPhone = phoneService.addPhone(testUser, new PhoneDTO("test name phone", "8888888"));
-        PhoneDTO phoneDTO = new PhoneDTO("new test name phone", "111111");
+        Phone testPhone = phoneService.addPhone(testUser, new PhoneDTO("test name phone", "11111111111"));
+        PhoneDTO phoneDTO = new PhoneDTO("new test name phone", "11111111111");
         String request = objectMapper.writeValueAsString(phoneDTO);
         mockMvc.perform(
                 put("/phones/" + testPhone.getId())
@@ -151,7 +151,7 @@ class PhoneControllerTest {
     @Test
     void deletePhoneSuccess() throws Exception {
         User testUser = userService.addUser("test name");
-        Phone testPhone = phoneService.addPhone(testUser, new PhoneDTO("new test name phone", "111111"));
+        Phone testPhone = phoneService.addPhone(testUser, new PhoneDTO("new test name phone", "11111111111"));
         mockMvc.perform(delete("/phones/" + testPhone.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())

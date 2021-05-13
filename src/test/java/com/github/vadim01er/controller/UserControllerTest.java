@@ -153,8 +153,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())));
     }
 
     @Test
@@ -222,7 +222,7 @@ class UserControllerTest {
 
     @Test
     void saveContactBadRequestNoFindUser() throws Exception {
-        PhoneDTO testPhone = new PhoneDTO("phone name", "888888");
+        PhoneDTO testPhone = new PhoneDTO("phone name", "88888888888");
         String request = objectMapper.writeValueAsString(testPhone);
         mockMvc.perform(
                 post("/users/-1/phones")
@@ -236,7 +236,7 @@ class UserControllerTest {
     @Test
     void saveContactSuccess() throws Exception {
         User testUser = userService.addUser("it is test mock");
-        PhoneDTO testPhone = new PhoneDTO("phone name", "888888");
+        PhoneDTO testPhone = new PhoneDTO("phone name", "88888888888");
         String request = objectMapper.writeValueAsString(testPhone);
         MvcResult mvcResult = mockMvc.perform(
                 post("/users/" + testUser.getId() + "/phones")
