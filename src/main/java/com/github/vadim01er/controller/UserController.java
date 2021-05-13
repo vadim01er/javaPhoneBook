@@ -56,10 +56,6 @@ public class UserController {
 
     @GetMapping(params = {"name"})
     public ResponseEntity<JsonResponse> getByName(@Length(min = 1) @RequestParam("name") String name) {
-        if (name.equals("")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ExceptionResponse(HttpStatus.BAD_REQUEST, "Param name must not be 0 length"));
-        }
         List<User> all = userService.findAll();
         Pattern pattern = Pattern.compile(".*" + name + ".*");
         all = all.stream().filter(user -> pattern.matcher(user.getName()).find()).collect(Collectors.toList());
