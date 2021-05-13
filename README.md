@@ -9,3 +9,8 @@
 * получения списка всех записей в телефонной книге пользователя
 * поиск пользователей по имени (или его части) 
 * поиск телефонной записи по номеру телефона
+
+
+Postman где можно все попробовать руками: 
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/14540131-f0b8750f-dd81-4af4-9b55-870584aa36ff?action=collection%2Ffork&collection-url=entityId%3D14540131-f0b8750f-dd81-4af4-9b55-870584aa36ff%26entityType%3Dcollection%26workspaceId%3D9b308b5d-5e2f-4b55-bc66-393bb0c17c75)
